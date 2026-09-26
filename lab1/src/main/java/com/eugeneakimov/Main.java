@@ -1,18 +1,41 @@
 package com.eugeneakimov;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import static com.eugeneakimov.Utils.generateZipf;
+import static com.eugeneakimov.Utils.printBandwidth;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon
-            // src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
-        }
+public class Main {
+    static void singleThreadRun(long[] values) throws InterruptedException {
+        var collector = new SingleThreadMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, 1);
+        printBandwidth(bandwidth);
+    }
+
+    static void synchronizedRun(long[] values, int numThreads) throws InterruptedException {
+        var collector = new SynchronizedMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, numThreads);
+        printBandwidth(bandwidth);
+    }
+
+    static void emptySynchronizedRun(long[] values, int numThreads) throws InterruptedException {
+        var collector = new EmptyMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, numThreads);
+        printBandwidth(bandwidth);
+    }
+
+    static void shardedRun(long[] values, int numThreads) throws InterruptedException {
+        var collector = new ShardedMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, numThreads);
+        printBandwidth(bandwidth);
+    }
+
+    static void threadLocalRun(long[] values, int numThreads) throws InterruptedException {
+        var collector = new ThreadLocalMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, numThreads);
+        printBandwidth(bandwidth);
+    }
+
+    static void main() throws InterruptedException {
+        var values = generateZipf(1 << 20, 1023, 0);
+        threadLocalRun(values, 8);
     }
 }
