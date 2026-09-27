@@ -48,9 +48,8 @@ public class DoubleBufferedMetricsCollector implements MetricsCollector {
         while (true) {
             current = active;
             state.inside.set(current);
-            break;
-//            if (current == active) break;
-//            state.inside.setRelease(NOWHERE);
+            if (current == active) break;
+            state.inside.setRelease(NOWHERE);
         }
 
         int bucket = (int) Math.min(value / 4, BUCKETS_NUM - 1);

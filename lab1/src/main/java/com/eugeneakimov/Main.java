@@ -34,8 +34,14 @@ public class Main {
         printBandwidth(bandwidth);
     }
 
+    static void doubleBufferedRun(long[] values, int numThreads) throws InterruptedException {
+        var collector = new DoubleBufferedMetricsCollector();
+        var bandwidth = Benchmark.measurePoint(collector, values, numThreads);
+        printBandwidth(bandwidth);
+    }
+
     static void main() throws InterruptedException {
         var values = generateZipf(1 << 20, 1023, 0);
-        threadLocalRun(values, 8);
+        doubleBufferedRun(values, 14);
     }
 }

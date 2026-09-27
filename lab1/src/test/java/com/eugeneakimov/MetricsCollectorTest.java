@@ -15,7 +15,7 @@ class MetricsCollectorTest {
 
     @Test
     void threadLocalCollectorHasBrokenSnapshot() throws InterruptedException {
-        checkBrokenSnapshot(new ShardedMetricsCollector(), false);
+        checkBrokenSnapshot(new ThreadLocalMetricsCollector(), false);
     }
 
     @Test
