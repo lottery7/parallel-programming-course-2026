@@ -1,7 +1,6 @@
 package lab2;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -76,8 +75,11 @@ public final class Strategies {
         private final List<List<Integer>> options = new ArrayList<>();
         private final List<Integer> chosen = new ArrayList<>();
         private int depth;
+        private final int bound;
+        private int preemptions;
 
         public Dfs(int bound) {
+            this.bound = bound;
         }
 
         /**
@@ -85,18 +87,28 @@ public final class Strategies {
          */
         public void beginRun() {
             depth = 0;
+            preemptions = 0;
         }
 
         public int pick(List<Integer> enabled, int last) {
+            int choice;
             if (depth < chosen.size()) {
-                int choice = options.get(depth).get(chosen.get(depth));
-                depth++;
-                return choice;
+                choice = options.get(depth).get(chosen.get(depth));
+            } else {
+                List<Integer> filteredEnabled = new ArrayList<>();
+                if (preemptions == bound && enabled.contains(last)) {
+                    filteredEnabled.add(last);
+                } else {
+                    filteredEnabled.addAll(enabled);
+                }
+                choice = filteredEnabled.getFirst();
+                chosen.add(0);
+                options.add(filteredEnabled);
             }
-            int choice = enabled.getFirst();
-            chosen.add(0);
-            options.add(new ArrayList<>(enabled));
             depth++;
+            if (choice != last && enabled.contains(last)) {
+                preemptions++;
+            }
             return choice;
         }
 

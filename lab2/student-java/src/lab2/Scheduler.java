@@ -66,7 +66,9 @@ public final class Scheduler {
                 for (var state : states) {
                     if (!state.finished) {
                         anyAlive = true;
-                        if (state.waitingFor == null || state.waitingFor.ownerState == null) {
+                        boolean waitingLock = (state.waitingFor != null && state.waitingFor.ownerState != null);
+                        boolean waitingCond = (state.waitingCond != null && !state.waitingCond.getAsBoolean());
+                        if (!waitingLock && !waitingCond) {
                             enabled.add(state.id);
                         }
                     }
@@ -133,7 +135,11 @@ public final class Scheduler {
      * Ждать, пока cond не станет true. До этого поток не попадает в enabled.
      */
     public static void await(BooleanSupplier cond) {
-        throw new UnsupportedOperationException("TODO этап 1: Scheduler.await");
+        var state = CUR_STATE.get();
+        state.waitingCond = cond;
+        touchShared();
+        state.waitingCond = null;
+        logOperation("await done");
     }
 
     static void touchShared() {

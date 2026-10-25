@@ -1,6 +1,7 @@
 package lab2;
 
 import java.util.concurrent.Semaphore;
+import java.util.function.BooleanSupplier;
 
 public class ThreadState {
     final Scheduler scheduler;
@@ -11,6 +12,7 @@ public class ThreadState {
     boolean touched = true;
     Thread thread;
     SchedLock waitingFor = null;
+    BooleanSupplier waitingCond = null;
 
     public ThreadState(Scheduler scheduler, int id, Runnable body) {
         this.scheduler = scheduler;
